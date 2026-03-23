@@ -43,6 +43,13 @@ dependencies {
 
     // Volley library for API calls
     implementation("com.android.volley:volley:1.2.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("com.google.mlkit:face-detection:16.1.5")
+    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

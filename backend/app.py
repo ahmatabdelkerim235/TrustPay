@@ -105,7 +105,7 @@ def login():
         "name": user["name"],
         "email": user["email"],
         "mobile": user["mobile"],
-        "upi_id": user["upi_id"]
+        "upi": user["upi_id"]
     }), 200
 
 
@@ -136,7 +136,10 @@ def make_transaction():
     # Verify PIN (FIXED)
     # -------------------------------
     if str(sender["upi_pin"]) != str(entered_pin):
-        return jsonify({"message": "Invalid UPI PIN"}), 401
+        return jsonify({
+            "success": False,
+            "message": "Invalid UPI PIN"
+        }), 401
 
     # -------------------------------
     # Find Receiver
@@ -165,9 +168,51 @@ def make_transaction():
     transactions.insert_one(transaction)
 
     return jsonify({
+        "success": True,
         "message": "Transaction successful"
     }), 200
 
+@app.route('/history', methods=['GET'])
+def history():
+    upi = request.args.get('upi')
+
+    if not upi:
+        return jsonify([])
+
+    user_transactions = list(transactions.find({
+        "sender_upi": upi
+    }))
+
+    result = []
+
+    for t in user_transactions:
+        try:
+            amount = float(t.get("amount", 0))
+        except:
+            amount = 0
+
+        result.append({
+            "amount": amount,
+            "type": "SENT"
+        })
+
+    return jsonify(result)
+
+@app.route("/transactions/<upi_id>", methods=["GET"])
+def get_transactions(upi_id):
+
+    user_transactions = list(transactions.find({
+        "$or": [
+            {"sender_upi": upi_id},
+            {"receiver_upi": upi_id}
+        ]
+    }))
+
+    for t in user_transactions:
+        t["_id"] = str(t["_id"])
+        t["timestamp"] = t["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+
+    return jsonify(user_transactions)
 
 # -------------------------------
 # Run Server

@@ -1,6 +1,7 @@
 package com.example.trustpay.ui.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 import android.widget.TextView;
@@ -24,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     MaterialButton btnLogin;
     TextView tvRegister;
 
-    String LOGIN_URL = "http://10.117.214.76:5000/login";
+    String LOGIN_URL = "http://10.0.2.2:5000/login";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +76,29 @@ public class LoginActivity extends AppCompatActivity {
                         String name = response.optString("name");
                         String userEmail = response.optString("email");
                         String mobile = response.optString("mobile");
-                        String upi = response.optString("upi_id");
+
+                        // ✅ FIXED KEY
+                        String upi = response.optString("upi");
+                        Toast.makeText(this, "Login UPI: " + upi, Toast.LENGTH_LONG).show();
 
                         Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-
                         intent.putExtra("name", name);
                         intent.putExtra("email", userEmail);
                         intent.putExtra("mobile", mobile);
-                        intent.putExtra("upi_id", upi);
+                        intent.putExtra("upi", upi); // 🔥 MUST PASS
+
+                        SharedPreferences prefs = getSharedPreferences("user_data", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+
+                        editor.putString("name", name);
+                        editor.putString("email", userEmail);
+                        editor.putString("mobile", mobile);
+                        editor.putString("upi", upi);
+
+                        editor.apply();
 
                         startActivity(intent);
                         finish();
-
                     },
 
                     error -> {

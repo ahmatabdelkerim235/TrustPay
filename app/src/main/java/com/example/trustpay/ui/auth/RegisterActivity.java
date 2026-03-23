@@ -20,7 +20,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText etName, etEmail, etMobile, etPassword, etUpiPin;
     MaterialButton btnRegister;
 
-    String BASE_URL = "http://10.117.214.76:5000/register";
+    String BASE_URL = "http://10.0.2.2:5000/register";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
