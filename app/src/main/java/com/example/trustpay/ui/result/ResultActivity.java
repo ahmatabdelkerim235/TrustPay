@@ -13,21 +13,26 @@ import com.google.android.material.button.MaterialButton;
 public class ResultActivity extends AppCompatActivity {
 
     MaterialButton btnBack;
+    String upi; // ✅ declare only
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
+        // ✅ NOW get intent here
+        upi = getIntent().getStringExtra("upi");
+
         btnBack = findViewById(R.id.btnBackDashboard);
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ResultActivity.this, DashboardActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        btnBack.setOnClickListener(v -> {
+
+            Intent intent = new Intent(ResultActivity.this, DashboardActivity.class);
+
+            intent.putExtra("upi", upi);
+
+            startActivity(intent);
+            finish();
         });
     }
 }

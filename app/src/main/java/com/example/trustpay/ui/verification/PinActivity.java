@@ -30,7 +30,7 @@ public class PinActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
 
-    String BASE_URL = "http://10.117.214.76:5000/transaction";
+    String BASE_URL = "http://10.0.2.2:5000/transaction";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,18 +80,49 @@ public class PinActivity extends AppCompatActivity {
                     response -> {
 
                         progressDialog.dismiss();
+                        android.util.Log.d("API_RESPONSE", response.toString());
 
-                        Intent intent = new Intent(PinActivity.this, ResultActivity.class);
-                        startActivity(intent);
-                        finish();
+                        try {
+
+                            boolean success = response.optBoolean("success", false);
+
+                            if (success) {
+
+                                Intent intent = new Intent(PinActivity.this, ResultActivity.class);
+                                intent.putExtra("upi", senderUpi);
+                                startActivity(intent);
+                                finish();
+
+                            } else {
+
+                                Intent intent = new Intent(PinActivity.this, DeclineActivity.class);
+                                intent.putExtra("reason", response.optString("message", "Transaction Failed"));
+
+                                startActivity(intent);
+                                finish();
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+
+                            Intent intent = new Intent(PinActivity.this, DeclineActivity.class);
+                            intent.putExtra("reason", "Unexpected error");
+
+                            startActivity(intent);
+                            finish();
+                        }
                     },
 
                     error -> {
 
                         progressDialog.dismiss();
 
+                        String errorMsg = error.networkResponse != null
+                                ? new String(error.networkResponse.data)
+                                : error.toString();
+
                         Intent intent = new Intent(PinActivity.this, DeclineActivity.class);
-                        intent.putExtra("reason", "Incorrect UPI PIN");
+                        intent.putExtra("reason", errorMsg);
                         startActivity(intent);
                         finish();
                     }

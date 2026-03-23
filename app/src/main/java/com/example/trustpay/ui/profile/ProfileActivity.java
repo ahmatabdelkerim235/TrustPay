@@ -1,6 +1,7 @@
 package com.example.trustpay.ui.profile;
 
 import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,10 +22,12 @@ public class ProfileActivity extends AppCompatActivity {
         tvMobile = findViewById(R.id.tvMobile);
         tvUpi = findViewById(R.id.tvUpi);
 
-        String name = getIntent().getStringExtra("name");
-        String email = getIntent().getStringExtra("email");
-        String mobile = getIntent().getStringExtra("mobile");
-        String upi = getIntent().getStringExtra("upi_id");
+        SharedPreferences prefs = getSharedPreferences("user_data", MODE_PRIVATE);
+
+        String name = prefs.getString("name", "");
+        String email = prefs.getString("email", "");
+        String mobile = prefs.getString("mobile", "");
+        String upi = prefs.getString("upi", "");
 
         tvName.setText("Name: " + name);
         tvEmail.setText("Email: " + email);
